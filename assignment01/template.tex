@@ -1,0 +1,141 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage} % Package to use full page
+\usepackage{parskip} % Package to tweak paragraph skipping
+\usepackage{tikz} % Package for drawing
+\usepackage{amsmath,mathtools}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\numberwithin{equation}{section}
+\usepackage{graphicx}% http://ctan.org/pkg/graphicx
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[noend]{algpseudocode}
+\usepackage{bm}
+\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+
+% requirements for pretty display of python code
+
+\usepackage{color}
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    linewidth=18cm
+}
+\input{NewCommand.tex}
+
+
+\lstset{style=mystyle}
+
+% Useful commands 
+%\input{NewCommand.tex}
+\makeatletter
+\def\@seccntformat#1{%
+  \expandafter\ifx\csname c@#1\endcsname\c@section\else
+  \csname the#1\endcsname\quad
+  \fi}
+\makeatother
+
+
+
+\title{
+ IFT6135 -- Homework \#1 \\ 
+\begin{large} 
+  Multilayer perceptrons - programming part
+\end{large} }
+
+\author{
+  Name 1 \\
+  \texttt{xxxxxxxx}
+  \and
+  Name 2\\
+  \texttt{xxxxxxxx}
+  \and
+  Name 3\\
+  \texttt{xxxxxxx}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\subtitle{Multilayer perceptrons - Programming part}
+
+\section{Problem 1}
+
+\subsection{Building the Model} % #1.1
+
+\textit{In the following sub-questions, please specify the model architecture (number of hidden units per layer, and the total number of parameters), the nonlinearity chosen as neuron activation, learning rate, mini-batch size.}
+
+The architecture of the model can be visualize in Fig.\ref{}.  It is composed of two hidden layers with ReLU neuron activations, 
+
+\begin{lstlisting}[language=Python, label=xx]
+model = torch.nn.Sequential(
+          torch.nn.Linear(h0,h1),
+          torch.nn.ReLU(),
+          torch.nn.Linear(h1,h2),
+          torch.nn.ReLU(),    
+          torch.nn.Linear(h2,h3))
+\end{lstlisting}
+
+
+
+
+\eq{
+\cro{\p{\p{asdf}}}\nop
+\Dd{x}{y}\nop
+\Ddel{x}{y}\nop
+\ve x\nop
+\vu{x}\nop
+\Xx\label{myfirstequation}
+\vs{\Sigma}
+}
+
+\ref{myfirstequation}
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,66 @@
+%&pdflatex
+%% filename: amsart-template.tex, version: 2.1
+\documentclass{amsart}
+\usepackage{hyperref}
+\usepackage{inputenc}
+\usepackage{graphicx}
+\usepackage{bbm}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{xca}[theorem]{Exercise}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section}
+\setlength{\parindent}{0pt} % turn off auto-indent
+
+\graphicspath{ {./} }
+
+\begin{document}
+
+\title{Assignment 2: Implementation of CNNs and Regularization [IFT6135]}
+
+\author{Joseph D. Viviano}
+\address{Universit\'e de Montr\'eal}
+\curraddr{}
+\email{joseph@viviano.ca}
+\thanks{}
+\date{March 2018}
+
+\maketitle
+
+\section{Regularization: Weight Decay, Early Stopping, Dropout, and Domain Prior Knowledge}
+
+\subsection{Early Stopping and Weight Decay}
+
+% Practical recommendations for gradient-based training of deep architectures
+
+\subsection{Dropout}
+
+\subsection{Convolutional Neural Network}
+
+% https://github.com/MaximumEntropy/welcome_tutorials/blob/pytorch/pytorch/4.%20Image%20Classification%20with%20Convnets%20and%20ResNets.ipynb
+
+\section{Puppers vs. Kittehs}
+
+
+% https://arxiv.org/abs/1409.1556
+
+
+\subsection{Architecture}
+\subsection{Training \& Validation Error}
+
+% NB: batchnorm
+
+\subsection{Hyperparameter Search}
+
+% Report final results on test set.
+% Visualize feature maps / kernels.
+% Visualize high error images.
+
+
+\end{document}
+

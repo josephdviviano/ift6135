@@ -1,0 +1,7 @@
+processed
+__pycache__
+raw
+data
+*.aux
+*.log
+*.out

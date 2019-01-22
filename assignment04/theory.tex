@@ -1,0 +1,228 @@
+%&pdflatex
+%% filename: amsart-template.tex, version: 2.1
+\documentclass{amsart}
+\usepackage{amscd}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bbm}
+\usepackage{bbold}
+\usepackage{bm}
+\usepackage{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{inputenc}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+
+\hypersetup{linkcolor=blue,citecolor=red,filecolor=dullmagenta,urlcolor=blue}
+
+\newtheorem{conj}{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}{Notation}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{xca}[theorem]{Exercise}
+\numberwithin{equation}{section}
+\setlength{\parindent}{0pt} % turn off auto-indent
+\theoremstyle{definition}
+\theoremstyle{remark}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+\newcommand{\bnxk}{{\mathrm{N}}(x,k)}
+\newcommand{\pd}{\frac{\partial}{\partial}}
+\newcommand{\px}[1]{\pi(x,{#1})}
+\newcommand{\Px}[1]{\Pi(x,{#1})}
+\newcommand{\snxk}{\pi(x,k)}
+
+\graphicspath{ {./} }
+
+\begin{document}
+
+\title{Assignment 4: Theory of Generative Models [IFT6135]}
+
+\author{Joseph D. Viviano}
+\address{Universit\'e de Montr\'eal}
+\curraddr{}
+\email{joseph@viviano.ca}
+\thanks{}
+\date{April 2018}
+
+\maketitle
+
+\section{Reparameterization Trick of Variational Autoencoders} \\
+
+\subsection{Transformation of Gaussian Noise} \\
+
+First let's define $z$ as a linear transformation applied to a gaussian 
+distribution with zero mean $\epsilon$: \\
+
+$$z= \mu(x+ \sigma(x\odot\epsilon$$ \\
+
+The expectation of $z$ is as follows. Crucially, note that the expectation
+of our normal distribution $E\epsilon = 0$: \\
+
+\begin{equation}
+\begin{split}
+E(z)
+&= E(\mu(x)+E\left(\sigma(x\odot \epsilon\right)\\
+&= \mu(x)+ \sigma(x\odot 0)
+\end{split}
+\end{equation}
+
+Therefore, it follows that $ E(z) = \mu(x) $. We can do a 
+similar calculation for $\sigma^2(z)$ to show that $\sigma^2(z) = \sigma^2(x)$
+and therefore $z$ has a gaussian with $z\sim \mathcal{N}(\mu(x, \sigma^2(x)$.\\
+
+Now let's look at the $k^2$ dimensional output of a neural network: 
+$z = \mu(x + S(x\odot\epsilon $, where $S(x)$ is our
+output. This gives us the same as for eq 1.1, replacing $\sigma$ for $S$: \\ 
+
+\begin{equation}
+\begin{split}
+E(z)&= E(\mu(x)+E\left(S(x\odot \epsilon\right) \\
+&= \mu(x)
+\end{split}
+\end{equation}
+
+In contrast, the calculations for variance leads to a due to the squaring of 
+$\sigma$. When one replaces $S$ for $\sigma$, one is left with the term 
+$S(x)S(x)^T$, so $\sigma^2(z) = \left(S(x)S(x)^T\right)$.
+
+Whereas before the variance term of our distribution was 
+$\sigma^2(x)$, it is now $\left(S(x) S(x)^T\right)$, as in 
+$z \sim \mathcal{N}(\mu(x), \left(S(x) S(x)^T\right) )$.\\
+
+\subsection{Encoders vs. Mean Fields} \\
+
+In general, the inference network used in in a variational autoencoder will 
+outperform traditional mean field methods which factorize the variational
+distribution as a product of distributions. More specifically, mean field 
+variational inference assumes the variational family factorizes: \\
+
+$$ q(z_1, z_2, ..., z_m) = \prod_{j=1}^m q(z_j) $$
+
+with each variable being independent. In practice, however, this is rarely true,
+and the dependencies between these variables makes the posterior hard to work 
+with. The mean field approach requires solutions to the expectations taken on 
+the posterior, which is generally  intractable. The variational autoencoder gets 
+around this requirement by only approximating the posterior using the 
+probabilistic encoder $ q_{\phi}(z|x) $, which approximates the true generating
+model $ p_{\theta}(x,z) $, and where the parameters $\phi$ and $\theta$ are 
+optimized jointly by the variational autoencoder algorithm.
+
+\section{Importance Weighted Autoencoder} \\
+
+\subsection{IWLB as a Lower Bound on log Likelihood} \\
+
+We can show that IWLB is a lower bound on the log likelihood $\log p(x)$ by 
+using Jensen's inequality (i.e., that a secant line of a concave function 
+lies below the graph), the fact that $\log$ is concave, and the fact that 
+$p(x,z_i)= p(x|z_i)p(x)$. Basicially, pull the $\log$ and denominator out
+of the bracket, and push the expectation to $p(x)$ (since $p(x) = Ep(x)$)
+to resolve to $\log(p(x))$: \\
+
+\begin{equation}
+\begin{split}
+\mathcal{L}_k&= E\left[\log \frac{1}{k} \sum_{i=1}^k \frac{p(x,z_i)}{q(z_i|x)} \right] \\
+&\leq \log \frac{1}{k} \sum_{i=1}^k E (p(x))\\
+&= \log (p(x))
+\end{split}
+\end{equation}
+
+\subsection{IWLB with k=2 is tighter than ELBO with k=1} \\
+
+First, observe the VAE loss function. Isn't it nice?
+
+\begin{equation}
+\begin{split}
+\log p(x) &\geq E_{q(z|x)} \left[\log \frac{p(x,z)}{q(z|x)} \right]\\
+&= \log (p(x))- D_{KL} \left(q(z|x)|| p(z|x) \right)\\
+&= \mathcal{L}_1
+\end{split}
+\end{equation}
+
+If we can demonstrate that $\mathcal{L}_K$ approaches $\log p(x)$ as $K$ grows, then we can claim that $\mathcal{L}_2$ is a tighter bound than ELBO. I'm sorry for the crappy formatting below but exams are killing me and I hope you understand ;). \\
+
+Suppose $\frac{p(x,y)}{p(y|x)}$ is smaller than $\frac{p(a,b)}{p(b|a)}$.
+Therefore, $E \left[\log \frac{1}{2}\left(\frac{p(x,y)}{q(y|x)}+\frac{p(a,b)}{q(b|a)}\right)\right] \leq E \left[\log  \frac{1}{2}\left(\frac{p(x,y)}{q(y|x)}+\frac{p(x,y)}{q(y|x)}\right)\right]$. \\
+
+If $\frac{p(x,y)}{p(y|x)}$ is the VAE loss function above, we can say with certianty that
+$E \left[\log \frac{1}{2}\left(\frac{p(x,y)}{q(y|x)}+\frac{p(a,b)}{q(b|a)}\right)\right] >
+\mathcal{L}_1$. It is also the exact formula for $\mathcal{L}_2$.
+
+When we sub in the smaller $\frac{p(x,y)}{q(y|x)}$ in place of the 
+larger $\frac{p(a,b)}{q(b|a)}$, our answer shows that  $\mathcal{L}_1 \leq \mathcal{L}_2$.\\
+
+\section{Maximum Likelihood for Generative Adversarial Networks} \\
+
+The original GAN objective can be writen as: \\
+
+$$ \max_D \mathbf{E}_{p}_{D}(x)} \big[\log D(x)\big] + \mathbf{E}_{p_G} \big[\log (1 - D(G(z))) \big]; \quad \max_G \mathbf{E}_{p_G} \big[\log D(G(z)) \big] $$ \\
+
+Note that the definition of an optimial discriminator using this notation is: \\
+
+\begin{equation}
+D^*(\mathbf{x}) = \frac{p_D(\mathbf{x})}{p_G(\mathbf{x}) + p_D(\mathbf{x})} \\
+\end{equation} \\
+
+The goal here is to find the maximum likelihood objective (cost function) instead of the negative log liklihood objective to apply to samples coming from the generator $\mathbf{E}_{p_G} \big[f(D(G(z))) \big]$, where $f(D(G(z)))$ must be found. \\
+
+As a reminder, the maximum likelihood estimate in this case would be: \\
+
+$$\hat\theta \in \{ \underset{\theta\in\Theta}{\operatorname{arg\,max}}\ \mathcal f(\theta\,;x) \}$$ \\
+
+Each step of learning in a GAN consists of reducing the expectation $f(x)$ run on a bunch of samples pulled from generator $G$, which we express as \\ 
+
+\begin{equation}
+\mathbf{E}_{x ~ p_G} f(x)
+\end{equation} \\
+
+here, $p_G$ represents a sample pulled from the probability distribution generated by $G$. First, let's take partial derivative with respect to the weights $\theta$ on a sample $x ~ p_G$ from the generator and represent it as an integral. Then we applied Leibniz's rule, and sub in the identity $ \frac{\partial}{\partial \theta}p_G(x) = p_G(x) \frac{\partial}{\partial \theta} log p_G(x)$: \\
+
+\begin{equation}
+\begin{aligned}
+& \frac{\partial}{\partial \theta} \mathbf{E}_{x ~ p_G} f(x) = \int f(x) \frac{\partial}{\partial \theta} p_G(x) \\
+& = \int f(x) \frac{\partial}{\partial \theta} p_G (X) dx \\
+& = \int f(x) p_G(x) \frac{\partial}{\partial \theta} log {p_G}(x) \\
+\end{aligned}
+\end{equation}\\
+
+
+While tells us that we can express the aformentioned expectation (3.2) as: \\
+
+\begin{equation}
+\mathbf{E}_{x ~ p_G} f(x) \frac{\partial}{\partial \theta} log {p_G}(x)
+\end{equation} \\
+
+This tells us the maximum likelihood can be found given: \\
+
+\begin{equation}
+f(x) = - \frac{p_D(x)}{p_G{x}}
+\end{equation} \\
+
+Now if we assume that our optimal discriminator $D^*(\mathbf{x})$ from (3.1) is the logistic sigmoid $\sigma(a(x))$ then \\
+
+\begin{equation}
+\sigma(a(x)) = \frac{p_D(\mathbf{x})}{p_G(\mathbf{x}) + p_D(\mathbf{x})}
+\end{equation} \\
+
+And it follows that \\
+
+\begin{equation}
+f(x) = -\exp(a(x))
+\end{equation} \\
+
+which is our function $f$ such that the objective corresponds to maximum liklihood.
+
+%$$\frac{\partial}{\partial \theta}$ J^{(G)} = \mathbf{E}_{x ~ p_g} f(x) \frac{\partial}{\partial \theta} log p_g(x)$$
+
+\end{document}
+

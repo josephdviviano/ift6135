@@ -1,0 +1,442 @@
+%&pdflatex
+%% filename: amsart-template.tex, version: 2.1
+\documentclass{amsart}
+\usepackage{hyperref}
+\usepackage{inputenc}
+\usepackage{graphicx}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage{amsmath,amsthm,amssymb,amsfonts,mathrsfs}
+\usepackage{mathtools}
+\usepackage[mathscr]{euscript}
+
+
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\const}{\mathrm{const}}
+\newcommand{\f}{f(\bm{x},\bm{\theta})}
+\newcommand{\activ}{a(\bm{x},\bm{\theta})}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\X}{\tilde{X}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\relu}{\mathrm{relu}}
+\newcommand{\der}{\mathrm{d}}
+\newcommand{\soft}{\mathrm{softmax}}
+\newcommand{\var}{\mathrm{Var}}
+%\newcommand{\tanh}{\mathrm{tanh}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{xca}[theorem]{Exercise}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section}
+\setlength{\parindent}{0pt} % turn off auto-indent
+
+\graphicspath{ {./} }
+
+\begin{document}
+
+\title{Assignment 2: Theory of CNNs and Regularization [IFT6135]}
+
+\author{Joseph D. Viviano}
+\address{Universit\'e de Montr\'eal}
+\curraddr{}
+\email{joseph@viviano.ca}
+\thanks{}
+\date{March 2018}
+
+\maketitle
+
+
+\section{Convolutions}
+
+% http://cs231n.github.io/convolutional-networks/
+$\bm{x}=(...,x_{-1}, x_0, x_1,x_2,x_3,x_4,...)
+=(...,0,1,2,3,4,0,...)$\\
+$\bm{w}=(...,w_{-1}, w_0, w_1,w_2,w_3,w_4,...)
+=(...,0,1,0,2,0,0,...)$\\
+\begin{equation}
+[\bm{x}*\bm{w}](i) =\sum_{k=-\infty}^{\infty}x_{k}w_{i-k}
+\end{equation}
+$~~~[\bm{x}*\bm{w}](0)=x_0w_0=1\cdot 1=1$\\
+
+$~~~[\bm{x}*\bm{w}](1)=x_0w_1 + x_1w_0 =1\cdot 0 + 2\cdot 1=2$\\
+
+$~~~
+[\bm{x}*\bm{w}](2)
+= x_0w_2 + x_1w_1 + x_2w_0
+= 1\cdot 2 + 2\cdot 0 + 3\cdot 1 =5$\\
+
+$~~~
+[\bm{x}*\bm{w}](3)
+= x_0w_3 + x_1w_2 + x_2w_1 + x_3w_0
+= 1\cdot 0 + 2\cdot 2 + 3\cdot 0 + 4\cdot 1 =8$\\
+
+$~~~
+[\bm{x}*\bm{w}](4)
+= x_2w_2 + x_3w_1
+= 3\cdot 2 + 4\cdot 0 =6$\\
+
+$~~~
+[\bm{x}*\bm{w}](5)
+= x_3w_2
+= 4\cdot 2 =8$\\
+
+Let's $y_i = [\bm{x}*\bm{w}](i)$. Thus we have $\bm{y}=(1,2,5,8,6,8)$ where the null elements are not shown.
+
+\section{Convolutional Neural Networks}
+% http://cs231n.github.io/convolutional-networks/
+
+(a) NB: zero padding in layer three, so size of layer 3 is $128 \times6 \times6$.
+The image is RGB (i.e., 3 channels), therefore the last layer is a fully
+connected layer of the size $$ 3 \times 128 \times 6 \times 6 = 13824$$. \\
+
+(b) The last convolution has a kernel size $4 \times 4$ and there are $128$
+filters with 3 channels, so $$n\_params = 4 \times 4 \times 128 \times 3 = 6144$$. \\
+
+\section{Kernel Configurations for CNNs}
+
+(a): $\bm{i}:$ input is $W_1\times H_1$ and output is $W_2\times H_2$.
+Kernel size is $K$, zero padding is $P$ and stride is $S$. Therefore
+
+\begin{equation}
+W_2= \frac{W_1-K+2P}{S}+1,
+\end{equation} \\
+
+plugging our numbers in, we get $$32=\frac{64-8+2P}{S}+1$$. Either $\bm{P=3}$
+and $\bm{S=2}$ would produce a proper convolution.\\
+
+$\bm{ii}:$ Dilatation size is $D$,
+
+\begin{equation}
+W_2= \frac{W_1-K+2P+(W_1-1)D}{S}+1
+\end{equation}
+
+So plugging in, $$32= \frac{64-K+2P+63.6}{2}+1.$$ If we set $\bm{K=400}$ and
+$\bm{P=10}$, then our convolution operation works.\\\\
+
+(b): If the kernel size of the pooling layer is $\bm{K=4\times4}$ with no
+overlap, and the stride size is $\bm{S=4}$, the pooling operation
+works.\\
+
+(c): $K=8$, $W_1=32$ and $S=4$, we plug them in and presto
+$$W_2= \frac{32-K}{4}+1=7.$$ The output is $\bm{7\times7}.$ \\
+
+(d): $\bm{i}$ $W_2=4$, $W_1=8$ and $P=0$, plugging in, we get
+$$4=\frac{8-K+0}{S}+1.$$ Therefore $\bm{K=2}$ and $\bm{S=2}$ are appropriate. \\
+
+$\bm{ii}:$ $W_2=4$, $W_1=8$, $P=2$ and $D=1$. Plugging in, we get
+$$4= \frac{8-K+4+7}{S}+1.$$ So $\bm{K=13}$ and $\bm{S=2}$ are appropriate.\\
+
+$\bm{iii}:$ $$4=\frac{8-K+2}{S}+1,$$ so $\bm{K=4}$ and $\bm{S=2}$
+are appropriate. \\
+
+\section{Dropout as Weight Decay}
+% see fundimental differences dropout vs/ weight decay
+% https://www.reddit.com/r/MachineLearning/comments/42nnpe/why_do_i_never_see_dropout_applied_in/
+(a) Let $\tilde{X}=X\odot\bm{\delta}$ where $\odot$ is the element wise product of matrices and
+$\bm{\delta}=(\delta_1,...,\delta_n)$, with
+\begin{equation}
+\delta_i=
+\begin{cases}
+\bm{0}, ~~~&p  \\
+\bm{1}, &1-p,
+\end{cases}
+\end{equation}
+and $\bm{0}$ and $\bm{1}$ are$1\times d$ vectors of elements 0 and 1.\\
+
+(b) Let $L_{MSE}$ be the loss function. The general formula for the loss function is as follows
+
+\begin{equation}
+L_{MSE}(w) = \frac{1}{n}\sum_{i=1}^n(\hat{y}^{(i)}-y^{(i)})^2
+\end{equation}
+
+where $\hat{y}^{(i)}$ is the the dropout prediction when we add dropout so using part (a) we have
+
+\begin{equation}
+\label{MSE}
+L_{MSE}(w) =\frac{1}{n}\sum_{i=1}^n(x^{(i)}\delta_i w-y^{(i)})^2
+\end{equation}
+
+(c) Assume dropout probability is $1-p$ for eacn input unit. Let $J_D(w, \delta)$
+be the network's loss function with dropout, so we minimize
+
+$$E\left[J_D(w,\delta)\right]= E_{\delta\sim Bernoulli(p)}\left[ \frac{1}{2}||(\delta\odot x)w-y||_2^2\right],$$
+
+We define $\delta\odot x:= \tilde{x}$, so
+
+\begin{equation}
+\begin{split}
+E\left[J_D(w.\delta)\right]&= E_\delta \left[\frac{1}{2}\left( \tilde{x}w-y\right)^T \left(\tilde{x}w-y \right) \right]\\
+&= E_\delta \left[ \frac{1}{2}w^T\tilde{x}^T \tilde{x}w -w\tilde{x}^T y +\frac{1}{2}yy^T\right]\\
+&= \frac{1}{2}w^T E_\delta\left[ \tilde{x}^T \tilde{x} \right]w-w E_\delta[\tilde{x}^T]y +\frac{1}{2}y^Ty\\
+\end{split}
+\end{equation}
+
+Using the covariance of two matrices, we can see that
+
+\begin{equation}
+\begin{split}
+E\left[J_D(w.\delta)\right]&=\frac{1}{2} w^T \left(E_\delta[\tilde{x}^T]E_\delta[\tilde{x}] +Cov_\delta \left [(\tilde{x}^T, \tilde{x})\right]\right)w -w E_\delta[\tilde{x}^T]y +\frac{1}{2}y^Ty\\
+&= \frac{1}{2}w^T p^2 x^T x w+ \frac{1}{2}w^T p(1-p) \left( diag(x^T x)^{1/2}\right)^2 w -wpx^Ty+\frac{1}{2}y^Ty,
+\end{split}
+\end{equation}
+
+Where the  $Cov_\delta(\tilde{x},\tilde{x}^T)$ is shown in the following matrix
+
+\[
+\begin{bmatrix}
+    x_{1}^2 var(\delta_1)  \hdots & 0 \\
+
+    \vdots   & \ddots \\
+   0 & \dots  & x_{n}^2 var(\delta_n)
+\end{bmatrix}
+\]
+where $var(\delta_i)=p(1-p)$ for each $i$. So we get a diagonal of the matrix $(x^Tx)$.\\
+To find the minimizing point we put the derivative (with respect to w) equal to zero, so we have
+\begin{equation}\label{Dropout}
+\left[\frac{\partial E[J_D]}{\partial w}\right]= p^2 x^Txw+p(1-p) \Gamma^2 w- px^Ty=0
+\end{equation}
+ Thus
+ $$pw\left( x^Tx+ \frac{(1-p)}{p} \Gamma^2\right) -x^Ty=0$$
+ and this gives us
+ $$w^*= pw = \left( x^Tx+\frac{(1-p)}{p}\Gamma^2\right)^{-1}x^Ty$$
+The weight that minimize the cost when using $L2$-regularization(deep learning book) is given by
+
+\begin{equation}
+ w = \left(X^{\top}X + \alpha I\right)^{-1}X^{\top}y
+\end{equation}
+
+where $I$ is the identity matrix and $\alpha$ is the regularization parameter.
+We can see that both parameter have very similar form. Hence, dropout and L2
+regularization should lead to similar regularization effect. The difference
+between is the diagonal matrix $Gamma$. With dropout,
+it is equal to the covariance matrix where with L2 regularization it is identity matrix.
+
+\section{Dropout as a Geometric Ensemble}
+
+\textit{Consider the case of a single linear layer model with a softmax output.
+Prove that weight scaling by 0.5 corresponds exactly to the inference of a
+conditional probability distribution proportional to a geometric mean over all
+dropout masks.} \\
+
+First, observe the single linear layer with softmax output with $n$ input
+variables represented by the vector $v$ with dropout mask $d$: \\
+
+\begin{equation}
+P(y = \mbox{y} | v;d ) = \mathbf{softmax}\left( W^T(d \odot v) + b \right)_y
+\end{equation} \\
+
+and the ensemble conditional probability distribution which represents the
+geometric mean over all dropout masks: \\
+
+\begin{equation}
+p_{ens}(y = \mbox{y} | v;d ) \propto \left( \prod_{i=1}^N \hat{y}_{v}^{(i)} \right)^{\frac{1}{N}}.
+\end{equation} \\
+
+Aren't they nice? Recall the alternative formulation of the softmax: \\
+
+\begin{equation}
+\mathbf{softmax}_i = \frac{e^{x_i}}{\sum_{k=1}^K e^{x_k}}
+\end{equation} \\
+
+Which we now rewrite, subbing in our vector representation of the softmax and
+replacing $e^x$ with $exp(x)$: \\
+
+\begin{equation}
+\mathbf{softmax}_y = \frac{exp \left( W_y^T(d \odot v) + b \right)}
+                          {\sum_{k=1}^K exp \left( W_{y'}^T(d \odot v) + b \right)}
+\end{equation}
+
+Now we show that the ensemble predictor is defined by re-normalizing the
+geometric mean over all the individual ensemble members' predictions: \\
+
+\begin{equation}
+P_{ens}(y = \mbox{y} | v) = \frac{\tilde{P}_{ens}(y = \mbox{y} | v)}{\sum{y'} \tilde{P}_{ens}(y = \mbox{y'} | v)}
+\end{equation} \\
+
+Where each $\tilde{P}_{ens}$ is the geometric mean over all dropout masks for a single $\mbox{y}$: \\
+
+\begin{equation}
+\tilde{P}_{ens}(y = \mbox{y} | v) = 2^n \sqrt{ \prod_{d \in \{0, 1\}^n} P(y = \mbox{y} | v;d ) }.
+\end{equation} \\
+
+Now we simply sub in our definition of $softmax$ for $P$: \\
+
+\begin{equation}
+\tilde{P}_{ens}(y = \mbox{y} | v) = 2^n \sqrt{ \prod_{d \in \{0, 1\}^n}
+                \frac{exp \left( W_y^T(d \odot v) + b \right)}
+                     {\sum_{k=1}^K exp \left( W_{y'}^T(d \odot v) + b \right)}}.
+\end{equation} \\
+
+Since the denominator is a constant under this normalization scheme we ignore it
+and simplify:
+
+\begin{equation}
+\tilde{P}_{ens}(y = \mbox{y} | v) \propto 2^n \sqrt{ \prod_{d \in \{0, 1\}^n} exp \left( W_y^T(d \odot v) + b \right)}
+\end{equation}
+
+We convert the product to the sum by taking $exp$ of the entire equation: \\
+
+\begin{equation}
+\tilde{P}_{ens}(y = \mbox{y} | v) \propto exp \left( \frac{1}{2^n} \sum_{d \in \{0, 1\}^n} W_y
+^T(d \odot v) + b \right)
+\end{equation}
+
+And finally the sum and exponent $n$ cancel: \\
+
+\begin{equation}
+\tilde{P}_{ens}(y = \mbox{y} | v) \propto exp \left( \frac{1}{2}  W_y^T(d \odot v) + b \right)
+\end{equation}
+
+Finally, we sub this back into our earlier formulation of the softmax to show
+that the weights $W$ are scaled by $\frac{1}{2}$: \\
+
+\begin{equation}
+\mathbf{softmax}_y = \frac{exp \left( \frac{1}{2}W_y^T(d \odot v) + b \right)}
+                          {\sum_{k=1}^K exp \left( \frac{1}{2}W_{y'}^T(d \odot v) + b \right)}
+\end{equation} \\
+
+Therefore, weight scaling by 0.5 is exactly equivilant to a conditional
+probability distribution proportional to a geometric mean over all dropout masks.
+
+\section{Normalization}
+
+(a) \textit{Show batchnorm and weightnorm are the same when you only have one
+layer and input feature $x$.}\\
+
+To normalize the minibatch of activations $B$, we do
+
+\begin{equation}
+B' = \frac{B - \delta}{\sigma}
+\end{equation}
+
+Where $\delta$ is the mean of $B$, and $\sigma$ is the standard deviation of $B$
+(with a small positive value added for numerical stability).
+
+We can replace $B$ with $w^\top x$, where $w$ is our weight matrix to see:
+
+\begin{equation}
+B' = \frac{w^\top x}{\sqrt{\mathrm{Var}[w^\top x]}} -
+     \frac{\mathbb{E}w^\top x}{\sqrt{\mathrm{Var}[w^\top x]}}
+\end{equation}
+
+Now notice the following about the unit vector
+
+\begin{equation}
+\frac{u}{||u||} = \frac{w^\top}{||w||}
+\end{equation}
+
+And
+
+\begin{equation}
+g=\frac{||w||_2}{\sqrt{\mathrm{Var}[w^{\top}x]}}
+\end{equation}
+
+Therefore if we assume $x$ and $w$ are independent and that $x$ has 0 mean:
+
+\begin{equation}
+B' = \frac{||w||_2}{\sqrt{\mathrm{Var}w^{\top}x}} \frac{w^\top}{||w||_2}x -
+     \frac{\mathbb{E}w^\top x}{\sqrt{\mathrm{Var}[w^{\top}x]}}
+\end{equation}
+
+\begin{equation}
+B' = g \frac{u}{||u||}x - \frac{\mathbb{E}w^\top x}{\sqrt{\mathrm{Var}[w^{\top}x]}}
+\end{equation}
+
+The expectation and standard deviation are constant under these conditions, so
+we get:
+
+\begin{equation}
+B' = g \frac{u}{||u||}x - c
+\end{equation} \\
+
+But we can ignore $c$ for this question. \\
+
+(b) \textit{Show the gradients of $L$ with respect to $u$ can be expressed as
+$sW^{*}\nabla_wL$.} \\
+
+From above:
+
+\begin{equation}
+B' = g \frac{u}{||u||}x
+\end{equation} \\
+
+With weightnorm, we explicity reparameterize the model to perform gradient
+descent in the new parameters $g$ and $u$ directly. By decoupling the norm of
+the weight vector $g$ and it's direction $\frac{u}{||u||}$, we can speed up
+convergence dramatically. \\
+
+If we differentiate through the above with respect to some new parameters v,
+we get: \\
+
+\begin{equation}
+\nabla_{g}L = \frac{\nabla_{u}L \cdot u}{||u||}, \nabla_{v}L = \frac{g}{||u||}\nabla_{u}L - \frac{g \nabla_{g}L}{||u||^{2}} u
+\end{equation}
+
+Where $\nabla_{u}L$ is the gradient with respect to the weights.
+
+Let's sub in $\nabla_{g}L$ into $\nabla_{v}L$ to get:
+
+\begin{equation}
+\nabla_{v}L = \frac{g}{||u||}\nabla_{u}L -
+    \frac{g \frac{\nabla_{u}L \cdot u}{||u||}}{||u||^{2}} u
+\end{equation}
+
+Or,
+
+\begin{equation}
+\nabla_{v}L = \frac{g}{||u||}\nabla_{u}L -
+    \frac{g \nabla_{u}L}{||u||^{3}} u^\top u
+\end{equation}
+
+This leads us to the forumulation:\\
+
+\begin{equation}
+\nabla_{v}L = \frac{g}{||u||} M_{u} \nabla_{u}L
+\end{equation}
+
+where,
+
+\begin{equation}
+M_{u} = Id - \frac{u^\top u}{||u||^{2}}
+\end{equation}
+
+where where $M_{u}$ is a projection matrix that projects onto the complement
+of the $u$ vector, and $Id$ is the identity matrix. \\
+
+(c) \textit{Explain a graph of different learning rates. }\\
+
+Let $\lambda$ be the learning rate. During learning we update $u$ via at step $k$
+using $v_k \leftarrow v_k - \lambda\nabla_vL$. \\
+
+As we said in the previous question, the matrix $M_u$ project onto the
+complement of $u$. Therefore, $\nabla_vL$ is equal to a constant times
+$M_u$, i.e., $u \perp \lambda\nabla_vL$. \\
+
+Since our update $v$ is proportional to $w$, the update must be orthogonal to
+$v$ and the norm increases by the Pythagorean theorem, which states that for any
+two orthogonal vectors $v$ and $v'$ the new weight vector must have the norm
+
+\begin{equation}
+||v'|| = \sqrt{||v||^2 + c^2 ||v||^2}
+\end{equation} \\
+
+if
+
+\begin{equation}
+c = || \lambda\nabla_vL || / ||v||
+\end{equation} \\
+
+This tells us a few things. If the norm of the gradients is small,
+$\sqrt{1 + c^2}$ is close to 1 and the norm of $v$ stops increasing. As the
+norm of the gradients grow, the norm of $v$ will also grow. Also, the norm of
+the updated parameter is proportional to the absoloute value of the learning
+rate. These observations explain the graph.
+
+\end{document}

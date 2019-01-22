@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% NOUVELLES COMMANDES %%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newcommand{\hred}[1]{%
+  \colorbox{red!50}{$\displaystyle#1$}}
+\newcommand{\hblue}[1]{%
+  \colorbox{blue!30}{$\displaystyle#1$}}
+\newcommand{\sigmoid}{\textrm{sigmoid}}
+  
+\newcommand{\hnk}[2]{{h_{#1}^{\p{#2}} }}    
+\newcommand{\hn}[1]{{\ve h^{\p{#1}} }}    
+\newcommand{\bn}[1]{{\ve b^{\p{#1}} }}  
+\newcommand{\xxi}[1]{{\ve x^{\p{#1}}}}
+\newcommand{\xxb}{{\ve{x}}}
+\newcommand{\yyi}[1]{{\mathrm y^{\p{#1}}}}
+\newcommand{\Wn}[1]{{\ve{W}^{(#1)}}}
+\newcommand{\vv}{{\mathrm{v}}}
+\newcommand{\xx}{{\mathrm{x}}}
+\newcommand{\zz}{{\mathrm{z}}}
+\newcommand{\yy}{{\mathrm{y}}}
+
+\newcommand{\Ind}[2]{{\bm{1}_{#1}\p{#2}}}
+\newcommand{\Sx}{{\mathrm S\p{\xx} }}
+\newcommand{\softmax}[1]{{\text{softmax}\p{#1}}}
+\newcommand{\softplus}[1]{{\text{softplus}\p{#1}}}
+\newcommand{\sign}[1]{{\text{sign}\p{#1}}}
+
+\newcommand{\bx}{{\mathbf{\mathrm{x}}}}
+\newcommand{\bz}{{\mathbf{\mathrm{z}}}}
+
+\newcommand{\Xx}{{\mathrm{X}}}
+\newcommand{\Yy}{{\mathrm{Y}}}
+\newcommand{\Zz}{{\mathrm{Z}}}
+
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\etal}{{\it et al.}}
+\newcommand{\Var}{\rm{Var}}
+\newcommand{\Cov}{\rm{Cov}}
+\newcommand{\iid}[1]{\stackrel{iid}{#1}}
+\newcommand{\E}{\mathbf{E}}
+\newcommand*\mean[1]{\bar{#1}}
+\newcommand{\oi}[1]{{\ve o^{\p{#1}}}}
+\newcommand{\mSigma}{\Sigma^{-1}}
+\newcommand{\tr}[1]{#1^\intercal}
+\newcommand{\argmin}{\arg\!\min}
+
+\newcommand{\bra}[1]{\left\langle\> #1\> \right}
+\newcommand{\ket}[1]{\left|\> #1\> \right\rangle}
+\newcommand{\braket}[2]{\left\langle\> #1\>\!\right.\left|\> #2\> \right\rangle}
+\newcommand{\ketbra}[2]{\left|\> #1\> \right\rangle\left\langle\> #1\> \right|}
+\newcommand{\valmoy}[1]{\left\langle\> #1\> \right\rangle}
+\newcommand{\braaket}[3]{\left\langle\>#1\>\right|\>#2\>\left|\>#3\>\right\rangle}
+\newcommand{\opmat}[1]{\left[\!\left[ #1\right]\!\right]}
+\newcommand{\norm}[1]{\left|#1\right|}
+\newcommand{\com}[2]{\left[#1, #2\right]}
+
+\newcommand{\vu}[1]{\hat{\mathbf{ #1}}}
+\newcommand{\ve}[1]{\mathbf{ #1}}
+\newcommand{\vs}[1]{\boldsymbol{ #1}}
+\newcommand{\tens}[1]{\overleftrightarrow{ #1}}
+\newcommand{\scal}[2]{\mathbf{ #1} \cdot \mathbf{ #2}}
+\newcommand{\Div}[1]{\nabla \cdots \mathbf{ #1}}
+\newcommand{\Rot}[1]{\nabla \wedge \mathbf{ #1}}
+\newcommand{\Pro}[2]{\mathbf{#1} \wedge \mathbf{ #2}}
+
+\newcommand{\Ddel}[2]{\frac{\partial #1}{\partial#2}}
+\newcommand{\Dd}[2]{\frac{\text{d} #1}{\text{d}#2}}
+\newcommand{\Dt}[1]{\frac{\text{d} #1}{\text{d}t}}
+\newcommand{\Dr}[1]{\frac{\text{d} #1}{\text{d}r}}
+\newcommand{\D}[1]{\>\text{d} #1}
+\newcommand{\Exp}[1]{\text{e}^{#1}}
+\newcommand{\ee}[1]{\times 10^{#1}}
+\newcommand{\eq}[1]{\begin{align} #1\end{align}}
+\newcommand{\eqd}[1]{\begin{align*} #1\end{align*}}
+
+\newcommand{\nop}{\notag\\}
+\newcommand{\p}[1]{\left( #1 \right)}
+\newcommand{\cro}[1]{\left[ #1 \right]}
+\newcommand{\Tr}[1]{\text{Tr} \cro{#1}}
+\newcommand{\ps}[0]{\slashed{p}}
+\newcommand{\ma}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\diag}[4]{\ma{ #1 & 0&0&0 \\ 0 & #2 &0& 0 \\ 0 & 0 & #3 & 0 \\ 0 & 0
+& 0 & #4}}
+\newcommand{\mat}[4]{\ma{ #1 & #2 \\ #3 & #4}}
+\newcommand{\spineur}[2]{\ma{ #1 \\ #2}}
+\newcommand{\spineurT}[2]{\ma{ #1  #2}}
+\newcommand{\vecteurL}[3]{\ma{ #1 \\ #2 \\ #3}}
+
+\newcommand{\kelvin}{\text{ K}}
+\newcommand{\tesla}{\text{ T}}
+\newcommand{\kg}{\text{ kg}}
+\newcommand{\m}{\text{ m}}
+\newcommand{\cm}{\text{ cm}}
+\newcommand{\micron}{\> \mu\text{m}}
+\newcommand{\nm}{\text{ nm}}
+\newcommand{\picom}{\text{ pm}}
+\newcommand{\fm}{\text{ fm}}
+\newcommand{\s}{\text{ s}}
+\newcommand{\kev}{\text{ keV}}
+\newcommand{\mev}{\text{ MeV}}
+\newcommand{\joule}{\text{ J}}
+\newcommand{\wc}{\omega_\text{c}}
+\newcommand{\plasma}{\omega_\text{p}}
+
+\newcommand{\kB}{k_\text{B}}
+\newcommand{\N}{\mathbbm{N}}
+\newcommand{\Z}{\mathbbm{Z}}
+\newcommand{\R}{\mathbbm{R}}
+
+\newcommand{\mub}{\mu_B}
+\newcommand{\muo}{\mu_0}
+\newcommand{\soh}[1]{\sin\p{\frac{#1}{2}}}
+\newcommand{\cah}[1]{\cos\p{\frac{#1}{2}}}
+\newcommand{\sohc}[1]{\sin^2\p{\frac{#1}{2}}}
+\newcommand{\cahc}[1]{\cos^2\p{\frac{#1}{2}}}
+
+\newcommand{\del}{PdCoO$_2$}
