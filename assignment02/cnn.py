@@ -102,7 +102,7 @@ class MnistMLP(torch.nn.Module):
 class CNN(torch.nn.Module):
     """
     Convnet Classifier taken from
-    hsttps://git,ubs.com/MaximumEntropy/welcome_tutorials/blob/pytorch/pytorch/4.%20Image%20Classification%20with%20Convnets%20and%20ResNets.ipynb
+    hsttps://github.com/MaximumEntropy/welcome_tutorials/blob/pytorch/pytorch/4.%20Image%20Classification%20with%20Convnets%20and%20ResNets.ipynb
     """
     def __init__(self, batchnorm=False):
         super(CNN, self).__init__()
